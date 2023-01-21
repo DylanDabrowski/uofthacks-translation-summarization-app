@@ -9,7 +9,7 @@ function App() {
   const [translatedText, setTranslatedText] = useState("");
 
   const handleSubmit = async () => {
-    const newtext = translateText("en", "zh-CH", text);
+    const newtext = await translateText("en", "zh-CH", text);
     console.log(newtext);
     setTranslatedText(newtext);
   };
