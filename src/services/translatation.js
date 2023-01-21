@@ -20,3 +20,24 @@ export const translateText = async (fromLang, toLang, text) => {
     console.error(error);
   }
 };
+
+export const detectLanguage = async (text) => {
+  let url = `https://translation.googleapis.com/language/translate/v2/detect?key=${
+    import.meta.env.VITE_TRANSLATION_KEY
+  }`;
+  url += "&q=" + encodeURI(text);
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const json = await response.json();
+    return json.data.detections[0][0].language;
+  } catch (error) {
+    console.error(error);
+  }
+};
