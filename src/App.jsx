@@ -3,9 +3,7 @@ import "./App.css";
 import { translateText } from "./services/translatation";
 
 function App() {
-  const [text, setText] = useState(
-    "good luck to everyone participating in the hackathon this year! we will be making our own application and trying our best to win some cool prizes!"
-  );
+  const [text, setText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
 
   const handleSubmit = async () => {
@@ -16,7 +14,7 @@ function App() {
 
   return (
     <div className="App">
-      <textarea value={text} onChange={setText} />
+      <textarea value={text} onChange={e => setText(e.target.value)} />
       <button onClick={handleSubmit}>Submit</button>
       <p>{translatedText}</p>
     </div>
