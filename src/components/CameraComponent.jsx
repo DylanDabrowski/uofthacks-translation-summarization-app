@@ -10,7 +10,7 @@ export default function CameraComponent({
   setPhoto,
 }) {
   return (
-    <div>
+    <div style={{ maxWidth: "75%" }}>
       <button
         onClick={() => {
           setCameraOpen(false);
@@ -20,7 +20,7 @@ export default function CameraComponent({
       </button>
       {photo ? (
         <div>
-          <img src={photo} />
+          <img src={photo} style={{ width: "100%" }} />
           <button
             onClick={() => {
               setPhoto("");

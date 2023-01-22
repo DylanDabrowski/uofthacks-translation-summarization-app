@@ -1,36 +1,90 @@
-import { ToggleButtonGroup, ToggleButton } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import styles from "../styles/summary.module.css"
+import { ToggleButtonGroup, ToggleButton } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import styles from "../styles/summary.module.css";
+import CloseIcon from "@mui/icons-material/Close";
 
+export default function Summary({
+  setShowOutput,
+  summarizedText1,
+  summarizedText2,
+  translatedText,
+}) {
+  const [summaryType, setSummaryType] = useState("brief");
+  const [showFullTranslation, setShowFullTranslation] = useState(false);
 
-export default function Summary({setShowOutput, summarizedText1, summarizedText2}) {
-    const [summaryType, setSummaryType] = useState("brief")
+  const handleChange = (event, newType) => {
+    setSummaryType(newType);
+  };
 
-    const handleChange = (
-        event,
-        newType,
-      ) => {
-        setSummaryType(newType);
-      };
-
-    return (
-        <div className={styles.container}>
-            <button onClick={() => {setShowOutput(false)}}>X</button>
-            <div className={styles.selector_container}>
-            <ToggleButtonGroup
-                color="primary"
-                value={summaryType}
-                exclusive
-                onChange={handleChange}
-                aria-label="Platform"
-            >
-                <ToggleButton value="brief">Brief Summary</ToggleButton>
-                <ToggleButton value="indepth">In-depth Summary</ToggleButton>
-            </ToggleButtonGroup>
-            </div>
-            <p className={styles.text}>This text is about ...</p>
-            {summaryType == "indepth" ? <p className={styles.text}>{summarizedText2}</p> : <p className={styles.text}>{summarizedText1}</p>}
-            
+  return (
+    <div className={styles.container}>
+      <div
+        className={styles.closeIcon}
+        onClick={() => {
+          setShowOutput(false);
+        }}
+      >
+        <CloseIcon sx={{ fontSize: 20, color: "black" }} />
+      </div>
+      {showFullTranslation ? (
+        <></>
+      ) : (
+        <div className={styles.selector_container}>
+          <ToggleButtonGroup
+            color="primary"
+            value={summaryType}
+            exclusive
+            onChange={handleChange}
+            aria-label="Platform"
+          >
+            <ToggleButton value="brief">Brief Summary</ToggleButton>
+            <ToggleButton value="indepth">In-depth Summary</ToggleButton>
+          </ToggleButtonGroup>
         </div>
-    )
+      )}
+      {showFullTranslation ? (
+        <div>
+          <p className={styles.text}>Full translation:</p>
+          <div style={{ overflow: "scroll", height: 300 }}>
+            <p className={styles.text}>{translatedText}</p>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <p className={styles.text}>This text is about:</p>
+          <div style={{ overflow: "scroll", height: 300 }}>
+            {summaryType == "indepth" ? (
+              <p className={styles.text}>{summarizedText2}</p>
+            ) : (
+              <p className={styles.text}>{summarizedText1}</p>
+            )}
+          </div>
+        </div>
+      )}
+      {showFullTranslation ? (
+        <button
+          className={styles.fullTranslationButton}
+          style={{
+            backgroundColor: "#FFDF29",
+            color: "black",
+            fontWeight: "bold",
+          }}
+          onClick={() => {
+            setShowFullTranslation(false);
+          }}
+        >
+          Show Summary
+        </button>
+      ) : (
+        <button
+          className={styles.fullTranslationButton}
+          onClick={() => {
+            setShowFullTranslation(true);
+          }}
+        >
+          Show Full Translation
+        </button>
+      )}
+    </div>
+  );
 }
