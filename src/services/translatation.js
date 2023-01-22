@@ -19,17 +19,13 @@ export const detectLanguage = async (text) => {
   }
 };
 
-export const translateText = async (toLang, text) => {
-  const fromLang = await detectLanguage(text);
-
+export const translateText = async (fromLang, toLang, text) => {
   let url = `https://translation.googleapis.com/language/translate/v2?key=${
     import.meta.env.VITE_TRANSLATION_KEY
   }`;
   url += "&q=" + encodeURI(text);
-  url += `&source=zh-CN`;
+  url += `&source=${fromLang}`;
   url += `&target=${toLang}`;
-
-  console.log(fromLang, toLang, text);
 
   try {
     const response = await fetch(url, {

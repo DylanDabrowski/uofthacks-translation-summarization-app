@@ -17,7 +17,7 @@ app.post('/summarize/text', async (req, res)=>{
     try{
     let resp = await cohere.generate({
         prompt: req.body.input,
-        max_tokens: 100
+        max_tokens: req.body.tokens
     });
         res.status(200).json(resp)
     }catch(err){

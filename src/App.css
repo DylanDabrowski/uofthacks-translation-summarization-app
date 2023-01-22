@@ -1,11 +1,43 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
 .App {
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
+  align-items: center;  
+
+    z-index: 1;
+}
+
+.logo {
+  margin-top: 40px;
+}
+.camera_button {
+  display: flex;
+  width: 200px;
+  height: 200px;
+  background-color: #FFDF29;
+  border-radius: 100px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 3px 25px rgba(255, 223, 41, 0.25); 
+  cursor: pointer; 
+}
+
+.textinput_button {
+  display: flex;
+  width: 50px;
+  height: 50px;
+  background-color: #D9D9D9;
+  border-radius: 100px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer; 
+
+  margin-top: 20px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .App {
+    /* background-color: lightblue; */
+  }
 }
