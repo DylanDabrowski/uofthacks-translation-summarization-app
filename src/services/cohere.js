@@ -20,3 +20,20 @@ export const getTextSummary = async (input, maxtokens) => {
       console.log("error", error);
     });
 };
+
+export const generateText = async (prompt, max_tokens) => {
+  return await axios
+    .post(
+      `http://localhost:8080/generate`,
+      { prompt: prompt, max_tokens: max_tokens },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    )
+    .catch(function (error) {
+      console.log("error", error);
+    });
+};

@@ -5,22 +5,22 @@ import {
   photoToText,
   detectLanguage,
 } from "./services/translatation";
-import {
-  Backdrop,
-  CircularProgress,
-} from '@mui/material';
+import { Backdrop, CircularProgress } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import languages from "./assets/langs";
-import { getTextSummary } from "./services/cohere";
+import { getTextSummary, generateText } from "./services/cohere";
 import CameraComponent from "./components/CameraComponent";
 import MyModal from "./components/output.jsx";
 import Summary from "./components/Summary";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import TitleIcon from "@mui/icons-material/Title";
 import Alert from "@mui/material/Alert";
+
+const aiprompt =
+  "now make a summary of all the prior text, include the overall topic, and any dates and/or names mentioned.:";
 
 function App() {
   const [text, setText] = useState("");
@@ -35,20 +35,21 @@ function App() {
   const [summarizedText2, setSummarizedText2] = useState("");
   const [alertMsg, setAlertMsg] = useState("");
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  // const handleSubmit = async () => {
-  //   let newtext = await translateText(desiredLanguage, text);
-  //   setTranslatedText(newtext);
-  //   newtext = await getTextSummary(newtext);
-  //   console.log(newtext);
-  //   setSummarizedText(newtext.data.body.generations[0].text);
-  // };
-
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (imageText = text) => {
+    console.log("the text is", text);
+    console.log("the image text is", imageText);
+    let inputText = text;
+    if (text == "" || text == null) {
+      console.log("did we make it in here");
+      setText(imageText);
+      inputText = imageText;
+    }
+    setLoading(true);
     var detectedLanguage = "";
     if (inputLanguage == "auto") {
-      detectedLanguage = await detectLanguage(text);
+      detectedLanguage = await detectLanguage(inputText);
     } else {
       detectedLanguage = inputLanguage;
     }
@@ -57,15 +58,22 @@ function App() {
       let translatation = await translateText(
         detectedLanguage,
         desiredLanguage,
-        text
+        inputText
       );
       setTranslatedText(translatation);
       console.log(translatation);
-      const sumtext1 = await getTextSummary(translatation, 50);
-      const sumtext2 = await getTextSummary(translatation, 100);
+      const sumtext1 = await generateText(
+        `${translatation} \n ${aiprompt}`,
+        50
+      );
+      const sumtext2 = await generateText(
+        `${translatation} \n ${aiprompt}`,
+        100
+      );
       setSummarizedText1(sumtext1.data.body.generations[0].text);
       setSummarizedText2(sumtext2.data.body.generations[0].text);
       setAlertMsg("");
+      setLoading(false);
     } else {
       setAlertMsg("The Languages seem to be matching, try again.");
     }
@@ -74,6 +82,8 @@ function App() {
   async function handleSubmitPhoto() {
     const photoText = await photoToText(photo);
     console.log("final text ----- ", photoText);
+    setText(photoText);
+    handleSubmit(photoText);
     setCameraOpen(false);
 
     console.log("this is the photo", photo);
@@ -81,23 +91,21 @@ function App() {
 
   return (
     <div className="App">
-     
       {showOutput ? (
         <>
-        <Summary
-          setShowOutput={setShowOutput}
-          summarizedText1={summarizedText1}
-          summarizedText2={summarizedText2}
-          translatedText={translatedText}
-        />
-        
+          <Summary
+            setShowOutput={setShowOutput}
+            summarizedText1={summarizedText1}
+            summarizedText2={summarizedText2}
+            translatedText={translatedText}
+          />
+
           <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-          
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </>
       ) : (
         <></>
@@ -135,7 +143,11 @@ function App() {
       )}
 
       {textInputOpen ? (
-        <textarea value={text} onChange={(e) => setText(e.target.value)} />
+        <textarea
+          className="textbox"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
       ) : (
         <div
           className="textinput_button"
