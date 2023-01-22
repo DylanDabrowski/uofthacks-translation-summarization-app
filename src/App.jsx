@@ -18,8 +18,11 @@ import Summary from "./components/Summary";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import TitleIcon from "@mui/icons-material/Title";
 import Alert from "@mui/material/Alert";
+import { useSpring, animated } from "@react-spring/web";
 
-const aiprompt = "now make a summary of all the prior text as a list:";
+const aiprompt_brief = "now make a summary of all the prior text as a list:";
+const aiprompt_indepth =
+  "now make a summary of all the prior text and include any locations, names, and dates involved:";
 
 function App() {
   const [text, setText] = useState("");
@@ -37,13 +40,10 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (imageText = text) => {
-    setSummarizedText1("");
-    setSummarizedText2("");
     console.log("the text is", text);
     console.log("the image text is", imageText);
     let inputText = text;
     if (text == "" || text == null) {
-      console.log("did we make it in here");
       setText(imageText);
       inputText = imageText;
     }
@@ -51,6 +51,7 @@ function App() {
     var detectedLanguage = "";
     if (inputLanguage == "auto") {
       detectedLanguage = await detectLanguage(inputText);
+      setInputLanguage(detectedLanguage);
     } else {
       detectedLanguage = inputLanguage;
     }
@@ -64,11 +65,11 @@ function App() {
       setTranslatedText(translatation);
       console.log(translatation);
       const sumtext1 = await generateText(
-        `${translatation} \n ${aiprompt}`,
+        `${translatation} \n ${aiprompt_brief}`,
         50
       );
       const sumtext2 = await generateText(
-        `${translatation} \n ${aiprompt}`,
+        `${translatation} \n ${aiprompt_indepth}`,
         100
       );
       setSummarizedText1(sumtext1.data.body.generations[0].text);
@@ -81,6 +82,12 @@ function App() {
       setAlertMsg("The Languages seem to be matching, try again.");
     }
   };
+
+  // Spring Stuff
+  const slideUp = useSpring({
+    from: { top: 1000 },
+    to: { top: showOutput ? 100 : 1000 },
+  });
 
   async function handleSubmitPhoto() {
     const photoText = await photoToText(photo);
@@ -96,12 +103,16 @@ function App() {
     <div className="App">
       {showOutput ? (
         <>
-          <Summary
-            setShowOutput={setShowOutput}
-            summarizedText1={summarizedText1}
-            summarizedText2={summarizedText2}
-            translatedText={translatedText}
-          />
+          <animated.div style={slideUp} className="summary_container">
+            <Summary
+              setShowOutput={setShowOutput}
+              summarizedText1={summarizedText1}
+              summarizedText2={summarizedText2}
+              translatedText={translatedText}
+              inputLanguage={inputLanguage}
+              desiredLanguage={desiredLanguage}
+            />
+          </animated.div>
 
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -123,7 +134,7 @@ function App() {
           setPhoto={setPhoto}
         />
       ) : (
-        <div
+        <animated.div
           style={
             textInputOpen
               ? { width: 50, height: 50 }
@@ -138,11 +149,11 @@ function App() {
           <CameraAltIcon
             sx={
               textInputOpen
-                ? { fontSize: 20, color: "black" }
-                : { fontSize: 73, color: "black" }
+                ? { fontSize: 20, color: "#2d2d2d" }
+                : { fontSize: 73, color: "#2d2d2d" }
             }
           />
-        </div>
+        </animated.div>
       )}
 
       {textInputOpen ? (
@@ -159,7 +170,7 @@ function App() {
             setTextInputOpen(true);
           }}
         >
-          <TitleIcon sx={{ fontSize: 30, color: "black" }} />
+          <TitleIcon sx={{ fontSize: 30, color: "#2d2d2d" }} />
         </div>
       )}
 

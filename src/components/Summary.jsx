@@ -8,13 +8,27 @@ export default function Summary({
   summarizedText1,
   summarizedText2,
   translatedText,
+  inputLanguage,
+  desiredLanguage,
 }) {
   const [summaryType, setSummaryType] = useState("brief");
   const [showFullTranslation, setShowFullTranslation] = useState(false);
+  const [briefText, setBriefText] = useState();
+  const [depthText, setDepthText] = useState();
 
   const handleChange = (event, newType) => {
     setSummaryType(newType);
   };
+
+  const splitText = (text) => {
+    const arr = text.split("-");
+    console.log(arr);
+    return arr;
+  };
+
+  useEffect(() => {
+    console.log(summarizedText1);
+  }, [summarizedText1]);
 
   return (
     <div className={styles.container}>
@@ -44,6 +58,9 @@ export default function Summary({
       )}
       {showFullTranslation ? (
         <div>
+          <p className={styles.result_translation}>
+            {inputLanguage} - {desiredLanguage}
+          </p>
           <p className={styles.text}>Full translation:</p>
           <div style={{ overflow: "scroll", height: 300 }}>
             <p className={styles.text}>{translatedText}</p>
@@ -51,6 +68,9 @@ export default function Summary({
         </div>
       ) : (
         <div>
+          <p className={styles.result_translation}>
+            {inputLanguage} - {desiredLanguage}
+          </p>
           <p className={styles.text}>This text is about:</p>
           <div style={{ overflow: "scroll", height: 300 }}>
             {summaryType == "indepth" ? (
