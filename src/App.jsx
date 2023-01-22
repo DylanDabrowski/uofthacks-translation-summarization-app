@@ -5,6 +5,10 @@ import {
   photoToText,
   detectLanguage,
 } from "./services/translatation";
+import {
+  Backdrop,
+  CircularProgress,
+} from '@mui/material';
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -29,6 +33,8 @@ function App() {
   const [summarizedText1, setSummarizedText1] = useState("");
   const [summarizedText2, setSummarizedText2] = useState("");
 
+  const [loading, setLoading] = useState(false)
+
   // const handleSubmit = async () => {
   //   let newtext = await translateText(desiredLanguage, text);
   //   setTranslatedText(newtext);
@@ -52,10 +58,12 @@ function App() {
     );
     setTranslatedText(translatation);
     console.log(translatation);
-    const sumtext1 = await getTextSummary(translatation, 20);
+    setLoading(true)
+    const sumtext1 = await getTextSummary(translatation, 50);
     const sumtext2 = await getTextSummary(translatation, 100);
     setSummarizedText1(sumtext1.data.body.generations[0].text);
     setSummarizedText2(sumtext2.data.body.generations[0].text);
+    setLoading(false)
   };
 
   async function handleSubmitPhoto() {
@@ -68,12 +76,23 @@ function App() {
 
   return (
     <div className="App">
+     
       {showOutput ? (
+        <>
         <Summary
           setShowOutput={setShowOutput}
           summarizedText1={summarizedText1}
           summarizedText2={summarizedText2}
         />
+        
+          <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+          
+        </>
       ) : (
         <></>
       )}

@@ -36,7 +36,7 @@ export const translateText = async (fromLang, toLang, text) => {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-    });
+    }).catch(err=>console.log(err));
     const json = await response.json();
     return json.data.translations[0].translatedText;
   } catch (error) {
