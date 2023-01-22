@@ -3,14 +3,11 @@ import Camera from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
 
 export default function CameraComponent({
-  handleTakePhoto,
-  photo,
+  handleSubmitPhoto,
   setCameraOpen,
+  photo,
+  setPhoto,
 }) {
-  function handleTakePhoto(dataUri) {
-    // Do stuff with the photo...
-    console.log("takePhoto");
-  }
   return (
     <div>
       <button
@@ -20,11 +17,25 @@ export default function CameraComponent({
       >
         X
       </button>
-      <Camera
-        onTakePhoto={(dataUri) => {
-          handleTakePhoto(dataUri);
-        }}
-      />
+      {photo ? (
+        <div>
+          <img src={photo} />
+          <button
+            onClick={() => {
+              setPhoto("");
+            }}
+          >
+            Retake
+          </button>
+          <button onClick={handleSubmitPhoto}>Looks Good!</button>
+        </div>
+      ) : (
+        <Camera
+          onTakePhoto={(dataUri) => {
+            setPhoto(dataUri);
+          }}
+        />
+      )}
     </div>
   );
 }
