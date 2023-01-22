@@ -5,15 +5,18 @@ import axios from "axios";
  * @returns the input text summarized
  */
 export const getTextSummary = async (input, maxtokens) => {
-  return (await axios.post(`http://localhost:5000/summarize/text`, {input: input, tokens: maxtokens}, { 
-      headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    }
-  })
-  .catch(function (error) {
-    console.log("error",error);
-  })
-);
-
-}
+  return await axios
+    .post(
+      `http://localhost:8080/summarize/text`,
+      { input: input, tokens: maxtokens },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    )
+    .catch(function (error) {
+      console.log("error", error);
+    });
+};
