@@ -20,6 +20,7 @@ import MyModal from "./components/output.jsx";
 import Summary from "./components/Summary";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import TitleIcon from "@mui/icons-material/Title";
+import Alert from "@mui/material/Alert";
 
 function App() {
   const [text, setText] = useState("");
@@ -32,6 +33,7 @@ function App() {
   const [showOutput, setShowOutput] = useState(false);
   const [summarizedText1, setSummarizedText1] = useState("");
   const [summarizedText2, setSummarizedText2] = useState("");
+  const [alertMsg, setAlertMsg] = useState("");
 
   const [loading, setLoading] = useState(false)
 
@@ -44,26 +46,29 @@ function App() {
   // };
 
   const handleSubmit = async (event) => {
-    setShowOutput(true);
     var detectedLanguage = "";
     if (inputLanguage == "auto") {
       detectedLanguage = await detectLanguage(text);
     } else {
       detectedLanguage = inputLanguage;
     }
-    let translatation = await translateText(
-      detectedLanguage,
-      desiredLanguage,
-      text
-    );
-    setTranslatedText(translatation);
-    console.log(translatation);
-    setLoading(true)
-    const sumtext1 = await getTextSummary(translatation, 50);
-    const sumtext2 = await getTextSummary(translatation, 100);
-    setSummarizedText1(sumtext1.data.body.generations[0].text);
-    setSummarizedText2(sumtext2.data.body.generations[0].text);
-    setLoading(false)
+    if (detectedLanguage != desiredLanguage) {
+      setShowOutput(true);
+      let translatation = await translateText(
+        detectedLanguage,
+        desiredLanguage,
+        text
+      );
+      setTranslatedText(translatation);
+      console.log(translatation);
+      const sumtext1 = await getTextSummary(translatation, 50);
+      const sumtext2 = await getTextSummary(translatation, 100);
+      setSummarizedText1(sumtext1.data.body.generations[0].text);
+      setSummarizedText2(sumtext2.data.body.generations[0].text);
+      setAlertMsg("");
+    } else {
+      setAlertMsg("The Languages seem to be matching, try again.");
+    }
   };
 
   async function handleSubmitPhoto() {
@@ -83,6 +88,7 @@ function App() {
           setShowOutput={setShowOutput}
           summarizedText1={summarizedText1}
           summarizedText2={summarizedText2}
+          translatedText={translatedText}
         />
         
           <Backdrop
@@ -107,12 +113,24 @@ function App() {
         />
       ) : (
         <div
+          style={
+            textInputOpen
+              ? { width: 50, height: 50 }
+              : { width: 200, height: 200 }
+          }
           className="camera_button"
           onClick={() => {
+            setTextInputOpen(false);
             setCameraOpen(true);
           }}
         >
-          <CameraAltIcon sx={{ fontSize: 73, color: "black" }} />
+          <CameraAltIcon
+            sx={
+              textInputOpen
+                ? { fontSize: 20, color: "black" }
+                : { fontSize: 73, color: "black" }
+            }
+          />
         </div>
       )}
 
@@ -122,6 +140,7 @@ function App() {
         <div
           className="textinput_button"
           onClick={() => {
+            setCameraOpen(false);
             setTextInputOpen(true);
           }}
         >
@@ -129,52 +148,65 @@ function App() {
         </div>
       )}
 
-      <FormControl>
-        <InputLabel id="select-in-label">Input</InputLabel>
-        <Select
-          labelId="select-in-label"
-          id="select-in"
-          value={inputLanguage}
-          label="Input"
-          onChange={(e) => {
-            setInputLanguage(e.target.value);
-          }}
-        >
-          <MenuItem key={0} value={"auto"}>
-            Auto Detect
-          </MenuItem>
-          {languages.map((item, index) => {
-            return (
-              <MenuItem key={index + 1} value={item.code}>
-                {item.name}
-              </MenuItem>
-            );
-          })}
-        </Select>
-      </FormControl>
-      <FormControl>
-        <InputLabel id="select-out-label">Output</InputLabel>
-        <Select
-          labelId="select-out-label"
-          id="select-out"
-          value={desiredLanguage}
-          label="Output"
-          onChange={(e) => {
-            setDesiredLanguage(e.target.value);
-          }}
-        >
-          {languages.map((item, index) => {
-            return (
-              <MenuItem key={index} value={item.code}>
-                {item.name}
-              </MenuItem>
-            );
-          })}
-        </Select>
-      </FormControl>
-      <button onClick={handleSubmit}>Submit</button>
-      {/* <p>{translatedText}</p>
-      <p>{summarizedText1}</p> */}
+      <div className="selectors_container">
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="select-in-label">Translate From</InputLabel>
+          <Select
+            labelId="select-in-label"
+            id="select-in"
+            value={inputLanguage}
+            label="Input"
+            onChange={(e) => {
+              setInputLanguage(e.target.value);
+            }}
+          >
+            <MenuItem key={0} value={"auto"}>
+              Auto Detect
+            </MenuItem>
+            {languages.map((item, index) => {
+              return (
+                <MenuItem key={index + 1} value={item.code}>
+                  {item.name}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="select-out-label">Translate To</InputLabel>
+          <Select
+            labelId="select-out-label"
+            id="select-out"
+            value={desiredLanguage}
+            label="Output"
+            onChange={(e) => {
+              setDesiredLanguage(e.target.value);
+            }}
+          >
+            {languages.map((item, index) => {
+              return (
+                <MenuItem key={index} value={item.code}>
+                  {item.name}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </div>
+      {textInputOpen ? (
+        <button onClick={handleSubmit} style={{ marginTop: 20 }}>
+          Submit
+        </button>
+      ) : (
+        <></>
+      )}
+      {alertMsg ? (
+        <div style={{ marginTop: 15 }}>
+          <Alert severity="warning">{alertMsg}</Alert>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
