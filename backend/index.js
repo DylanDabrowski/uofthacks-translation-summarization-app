@@ -17,8 +17,8 @@ app.use(cors());
 app.post("/summarize/text", async (req, res) => {
   try {
     let resp = await cohere.generate({
-      prompt: req.body.input,
-      max_tokens: 20,
+        prompt: req.body.input,
+        max_tokens: req.body.tokens
     });
     res.status(200).json(resp);
   } catch (err) {
