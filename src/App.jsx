@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { translateText } from "./services/translatation";
+import { translateText, photoToText } from "./services/translatation";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import languages from "./assets/langs";
-import { getTextSummary } from './services/cohere'
+import { getTextSummary } from "./services/cohere";
 import CameraComponent from "./components/CameraComponent";
 
 function App() {
@@ -20,8 +20,8 @@ function App() {
   const handleSubmit = async () => {
     let newtext = await translateText(desiredLanguage, text);
     setTranslatedText(newtext);
-    newtext = await getTextSummary(newtext)
-    console.log(newtext)
+    newtext = await getTextSummary(newtext);
+    console.log(newtext);
     setSummarizedText(newtext.data.body.generations[0].text);
   };
 
@@ -30,10 +30,11 @@ function App() {
     console.log(desiredLanguage);
   };
 
-  function handleSubmitPhoto(dataUri) {
-    // Do stuff with the photo...
-
+  async function handleSubmitPhoto() {
+    const photoText = await photoToText(photo);
+    console.log("final text ----- ", photoText);
     setCameraOpen(false);
+
     console.log("this is the photo", photo);
   }
 
@@ -91,8 +92,6 @@ function App() {
       }}>Submit</button>
       <p>{summarizedText}</p> */}
     </div>
-
-    
   );
 }
 
