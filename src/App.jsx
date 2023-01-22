@@ -32,9 +32,9 @@ function App() {
 
   function handleSubmitPhoto(dataUri) {
     // Do stuff with the photo...
-    console.log("submit photo");
 
     setCameraOpen(false);
+    console.log("this is the photo", photo);
   }
 
   return (
@@ -49,9 +49,10 @@ function App() {
         </button>
         {cameraOpen ? (
           <CameraComponent
-            handleTakePhoto={handleSubmitPhoto}
-            photo={photo}
+            handleSubmitPhoto={handleSubmitPhoto}
             setCameraOpen={setCameraOpen}
+            photo={photo}
+            setPhoto={setPhoto}
           />
         ) : (
           <></>
