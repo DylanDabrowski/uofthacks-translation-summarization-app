@@ -19,8 +19,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import TitleIcon from "@mui/icons-material/Title";
 import Alert from "@mui/material/Alert";
 
-const aiprompt =
-  "now make a summary of all the prior text, include the overall topic, and any dates and/or names mentioned.:";
+const aiprompt = "now make a summary of all the prior text as a list:";
 
 function App() {
   const [text, setText] = useState("");
@@ -38,6 +37,8 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (imageText = text) => {
+    setSummarizedText1("");
+    setSummarizedText2("");
     console.log("the text is", text);
     console.log("the image text is", imageText);
     let inputText = text;
@@ -74,6 +75,8 @@ function App() {
       setSummarizedText2(sumtext2.data.body.generations[0].text);
       setAlertMsg("");
       setLoading(false);
+      setText("");
+      setPhoto("");
     } else {
       setAlertMsg("The Languages seem to be matching, try again.");
     }
