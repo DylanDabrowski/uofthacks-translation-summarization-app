@@ -76,18 +76,11 @@ function App() {
       setSummarizedText2(sumtext2.data.body.generations[0].text);
       setAlertMsg("");
       setLoading(false);
-      setText("");
       setPhoto("");
     } else {
       setAlertMsg("The Languages seem to be matching, try again.");
     }
   };
-
-  // Spring Stuff
-  const slideUp = useSpring({
-    from: { top: 1000 },
-    to: { top: showOutput ? 100 : 1000 },
-  });
 
   async function handleSubmitPhoto() {
     const photoText = await photoToText(photo);
@@ -98,6 +91,25 @@ function App() {
 
     console.log("this is the photo", photo);
   }
+
+  // Spring Stuff
+  const slideUp = useSpring({
+    from: { top: 1000 },
+    to: { top: showOutput ? 100 : 1000 },
+  });
+
+  const cameraIcon = useSpring({
+    from: { width: 200, height: 200 },
+    to: { width: textInputOpen ? 50 : 200, height: textInputOpen ? 50 : 200 },
+  });
+
+  const textField = useSpring({
+    from: { width: 50, height: 50 },
+    to: {
+      width: textInputOpen ? 300 : 50,
+      height: textInputOpen ? 250 : 50,
+    },
+  });
 
   return (
     <div className="App">
@@ -135,13 +147,10 @@ function App() {
         />
       ) : (
         <animated.div
-          style={
-            textInputOpen
-              ? { width: 50, height: 50 }
-              : { width: 200, height: 200 }
-          }
+          style={cameraIcon}
           className="camera_button"
           onClick={() => {
+            setText("");
             setTextInputOpen(false);
             setCameraOpen(true);
           }}
@@ -157,7 +166,8 @@ function App() {
       )}
 
       {textInputOpen ? (
-        <textarea
+        <animated.textarea
+          style={textField}
           className="textbox"
           value={text}
           onChange={(e) => setText(e.target.value)}
