@@ -8,13 +8,16 @@ const vision = require("@google-cloud/vision");
 const { GoogleAuth } = require("google-auth-library");
 require("dotenv").config();
 cohere.init(process.env.COHERE_KEY);
+const serverless = require('serverless-http')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
+const router = express.Router();
+app.use("/.netlify/functions/", router);
 
-app.post("/summarize/text", async (req, res) => {
+router.post("/api/summarize/text", async (req, res) => {
   try {
     let resp = await cohere.generate({
       prompt: req.body.input,
@@ -26,7 +29,7 @@ app.post("/summarize/text", async (req, res) => {
   }
 });
 
-app.post("/generate", async (req, res) => {
+router.post("/api/generate", async (req, res) => {
   try {
     const response = await cohere.generate({
       model: "command-xlarge-nightly",
@@ -47,7 +50,7 @@ const auth = new GoogleAuth({
 // Creates a client
 const client = new vision.ImageAnnotatorClient({ auth });
 
-app.post("/imageToText", async (req, res) => {
+router.post("/api/imageToText", async (req, res) => {
   try {
     console.log("hello world");
     console.log("file buffer", req.file.buffer);
@@ -61,8 +64,10 @@ app.post("/imageToText", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 8080, () => {
-  console.log(
-    `ollie listening at http://localhost:${process.env.PORT || 8080}`
-  );
-});
+// app.listen(process.env.PORT || 8080, () => {
+//   console.log(
+//     `ollie listening at http://localhost:${process.env.PORT || 8080}`
+//   );
+// });
+
+module.exports.handler = serverless(app)

@@ -7,7 +7,7 @@ import axios from "axios";
 export const getTextSummary = async (input, maxtokens) => {
   return await axios
     .post(
-      `http://localhost:8080/summarize/text`,
+      `/.netlify/functions/api/summarize/text`,
       { input: input, tokens: maxtokens },
       {
         headers: {
@@ -24,7 +24,7 @@ export const getTextSummary = async (input, maxtokens) => {
 export const generateText = async (prompt, max_tokens) => {
   return await axios
     .post(
-      `http://localhost:8080/generate`,
+      `/.netlify/functions/api/generate`,
       { prompt: prompt, max_tokens: max_tokens },
       {
         headers: {
