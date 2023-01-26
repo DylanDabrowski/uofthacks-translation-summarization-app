@@ -1,9 +1,8 @@
 import axios from "axios";
 
 export const detectLanguage = async (text) => {
-  let url = `https://translation.googleapis.com/language/translate/v2/detect?key=${
-    import.meta.env.VITE_TRANSLATION_KEY
-  }`;
+  let url = `https://translation.googleapis.com/language/translate/v2/detect?key=${import.meta.env.VITE_TRANSLATION_KEY
+    }`;
   url += "&q=" + encodeURI(text);
 
   try {
@@ -22,9 +21,8 @@ export const detectLanguage = async (text) => {
 };
 
 export const translateText = async (fromLang, toLang, text) => {
-  let url = `https://translation.googleapis.com/language/translate/v2?key=${
-    import.meta.env.VITE_TRANSLATION_KEY
-  }`;
+  let url = `https://translation.googleapis.com/language/translate/v2?key=${import.meta.env.VITE_TRANSLATION_KEY
+    }`;
   url += "&q=" + encodeURI(text);
   url += `&source=${fromLang}`;
   url += `&target=${toLang}`;
@@ -36,7 +34,7 @@ export const translateText = async (fromLang, toLang, text) => {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-    }).catch(err=>console.log(err));
+    }).catch(err => console.log(err));
     const json = await response.json();
     return json.data.translations[0].translatedText;
   } catch (error) {
@@ -66,10 +64,6 @@ export const translateText = async (fromLang, toLang, text) => {
 // };
 
 export const photoToText = async (photo) => {
-  const config = {
-    sizeFactor: 1,
-    imgCompression: 0.5,
-  };
   var data = {
     requests: [
       {
@@ -87,7 +81,8 @@ export const photoToText = async (photo) => {
   };
   return await axios({
     method: "post",
-    url: "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBNmcupGVNltvWPZRaoF9ZJB_uyrNEahbw",
+    url: `https://vision.googleapis.com/v1/images:annotate?key=${import.meta.env.VITE_TRANSLATION_KEY
+      }`,
     data,
     config: { headers: { "Content-Type": "multipart/form-data" } },
   })
